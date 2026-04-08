@@ -1,0 +1,31 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CargoLink.SoapServices", "CargoLink.SoapServices\CargoLink.SoapServices.csproj", "{1A2B3C4D-5678-90AB-CDEF-123456789ABC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CargoLink.RestApi", "CargoLink.RestApi\CargoLink.RestApi.csproj", "{2B3C4D5E-6789-01BC-DEF1-23456789ABCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CargoLink.Core", "CargoLink.Core\CargoLink.Core.csproj", "{3C4D5E6F-7890-12CD-EF12-3456789ABCDE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A2B3C4D-5678-90AB-CDEF-123456789ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A2B3C4D-5678-90AB-CDEF-123456789ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A2B3C4D-5678-90AB-CDEF-123456789ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A2B3C4D-5678-90AB-CDEF-123456789ABC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B3C4D5E-6789-01BC-DEF1-23456789ABCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B3C4D5E-6789-01BC-DEF1-23456789ABCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B3C4D5E-6789-01BC-DEF1-23456789ABCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B3C4D5E-6789-01BC-DEF1-23456789ABCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C4D5E6F-7890-12CD-EF12-3456789ABCDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C4D5E6F-7890-12CD-EF12-3456789ABCDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C4D5E6F-7890-12CD-EF12-3456789ABCDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C4D5E6F-7890-12CD-EF12-3456789ABCDE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
