@@ -1,0 +1,237 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "CargoLink.LegacyHost | v1",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5800/"
+    }
+  ],
+  "paths": {
+    "/api/shipments": {
+      "get": {
+        "tags": [
+          "Shipments"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Shipments"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShipmentDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/shipments/{id}": {
+      "get": {
+        "tags": [
+          "Shipments"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/tracking/{trackingNumber}": {
+      "get": {
+        "tags": [
+          "Tracking"
+        ],
+        "parameters": [
+          {
+            "name": "trackingNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/quotes": {
+      "post": {
+        "tags": [
+          "Quotes"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateRequestDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateShipmentDto": {
+        "required": [
+          "fromAddress",
+          "fromCity",
+          "fromZip",
+          "toAddress",
+          "toCity",
+          "toZip",
+          "weight",
+          "length",
+          "width",
+          "height",
+          "service"
+        ],
+        "type": "object",
+        "properties": {
+          "fromAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fromCity": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "fromZip": {
+            "type": "string"
+          },
+          "toAddress": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "toCity": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "toZip": {
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "length": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "width": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "height": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "null",
+              "number",
+              "string"
+            ],
+            "format": "double"
+          },
+          "service": {
+            "type": "string"
+          }
+        }
+      },
+      "RateRequestDto": {
+        "required": [
+          "fromZip",
+          "toZip",
+          "weight"
+        ],
+        "type": "object",
+        "properties": {
+          "fromZip": {
+            "type": "string"
+          },
+          "toZip": {
+            "type": "string"
+          },
+          "weight": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": [
+              "number",
+              "string"
+            ],
+            "format": "double"
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Shipments"
+    },
+    {
+      "name": "Tracking"
+    },
+    {
+      "name": "Quotes"
+    }
+  ]
+}

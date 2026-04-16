@@ -1,0 +1,217 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CargoLink Express Legacy REST API",
+    "description": "Undocumented REST API for CargoLink Express shipping platform. Reverse-engineered from the legacy ASP.NET Web API 1.x codebase (net462).",
+    "version": "1.0.0-legacy",
+    "contact": {
+      "name": "CargoLink Express"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5800",
+      "description": "Legacy REST API"
+    }
+  ],
+  "paths": {
+    "/api/shipments": {
+      "get": {
+        "tags": ["Shipments"],
+        "summary": "List all shipments",
+        "operationId": "getShipments",
+        "responses": {
+          "200": {
+            "description": "List of shipments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ShipmentDto" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Shipments"],
+        "summary": "Create a new shipment",
+        "operationId": "createShipment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateShipmentDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Shipment created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ShipmentDto" }
+              }
+            }
+          },
+          "400": { "description": "Invalid shipment data" }
+        }
+      }
+    },
+    "/api/shipments/{id}": {
+      "get": {
+        "tags": ["Shipments"],
+        "summary": "Get shipment by ID",
+        "operationId": "getShipment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shipment details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ShipmentDto" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tracking/{trackingNumber}": {
+      "get": {
+        "tags": ["Tracking"],
+        "summary": "Get tracking info by tracking number",
+        "operationId": "getTracking",
+        "parameters": [
+          {
+            "name": "trackingNumber",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tracking information",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TrackingDto" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quotes": {
+      "post": {
+        "tags": ["Quotes"],
+        "summary": "Get shipping rate quotes",
+        "operationId": "getQuotes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RateRequestDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rate quotes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RateQuoteDto" }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ShipmentDto": {
+        "type": "object",
+        "properties": {
+          "Id": { "type": "string" },
+          "TrackingId": { "type": "string" },
+          "FromAddress": { "type": "string" },
+          "FromZip": { "type": "string" },
+          "ToAddress": { "type": "string" },
+          "ToZip": { "type": "string" },
+          "Weight": { "type": "number" },
+          "Service": { "type": "string" },
+          "CurrentStatus": { "type": "string" },
+          "Cost": { "type": "number" }
+        }
+      },
+      "CreateShipmentDto": {
+        "type": "object",
+        "required": ["FromZip", "ToZip", "Weight", "Service"],
+        "properties": {
+          "FromAddress": { "type": "string" },
+          "FromCity": { "type": "string" },
+          "FromZip": { "type": "string" },
+          "ToAddress": { "type": "string" },
+          "ToCity": { "type": "string" },
+          "ToZip": { "type": "string" },
+          "Weight": { "type": "number" },
+          "Length": { "type": "number" },
+          "Width": { "type": "number" },
+          "Height": { "type": "number" },
+          "Service": { "type": "string" }
+        }
+      },
+      "TrackingDto": {
+        "type": "object",
+        "properties": {
+          "TrackingNumber": { "type": "string" },
+          "Status": { "type": "string" },
+          "Location": { "type": "string" },
+          "EstimatedDelivery": { "type": "string" },
+          "History": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TrackingEventDto" }
+          }
+        }
+      },
+      "TrackingEventDto": {
+        "type": "object",
+        "properties": {
+          "Event": { "type": "string" },
+          "Location": { "type": "string" },
+          "Timestamp": { "type": "string" },
+          "Notes": { "type": "string" }
+        }
+      },
+      "RateRequestDto": {
+        "type": "object",
+        "required": ["FromZip", "ToZip", "Weight"],
+        "properties": {
+          "FromZip": { "type": "string" },
+          "ToZip": { "type": "string" },
+          "Weight": { "type": "number" }
+        }
+      },
+      "RateQuoteDto": {
+        "type": "object",
+        "properties": {
+          "Service": { "type": "string" },
+          "Price": { "type": "number" },
+          "Days": { "type": "integer" }
+        }
+      }
+    }
+  }
+}
