@@ -1,0 +1,685 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "CargoLink Express Unified API",
+    "description": "Unified REST API specification for CargoLink Express shipping platform. This specification consolidates operations from the legacy WCF SOAP services (IShipmentService, ITrackingService, IRateService) and the legacy ASP.NET Web API 2 REST controllers (ShipmentController, TrackingController, QuoteController) into a single, modern OpenAPI 3.0 contract.",
+    "version": "2.0.0",
+    "contact": {
+      "name": "CargoLink Express Engineering"
+    },
+    "license": {
+      "name": "MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.cargolink.com",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Shipments",
+      "description": "Create, retrieve, list, and cancel shipments. Consolidates SOAP IShipmentService and REST ShipmentController operations."
+    },
+    {
+      "name": "Tracking",
+      "description": "Track shipments by tracking number. Consolidates SOAP ITrackingService and REST TrackingController operations."
+    },
+    {
+      "name": "Rates",
+      "description": "Get shipping rate quotes. Consolidates SOAP IRateService and REST QuoteController operations."
+    }
+  ],
+  "paths": {
+    "/api/shipments": {
+      "get": {
+        "tags": ["Shipments"],
+        "summary": "List all shipments",
+        "description": "Retrieves a list of all shipments. This operation originates from the REST API ShipmentController.GetShipments(); there is no SOAP equivalent.",
+        "operationId": "listShipments",
+        "responses": {
+          "200": {
+            "description": "A list of shipments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Shipment"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Shipments"],
+        "summary": "Create a new shipment",
+        "description": "Creates a new shipment and returns the created shipment with tracking number, cost, and estimated delivery. Consolidates SOAP IShipmentService.CreateShipment(ShipmentRequest) and REST ShipmentController.CreateShipment(CreateShipmentDto).",
+        "operationId": "createShipment",
+        "requestBody": {
+          "description": "Shipment creation details including origin, destination, package dimensions, and service level.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShipmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Shipment created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shipment"
+                }
+              }
+            },
+            "headers": {
+              "Location": {
+                "description": "URI of the newly created shipment",
+                "schema": {
+                  "type": "string",
+                  "format": "uri",
+                  "example": "/api/shipments/ship_a1b2c3d4"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/shipments/{shipmentId}": {
+      "get": {
+        "tags": ["Shipments"],
+        "summary": "Get a shipment by ID",
+        "description": "Retrieves the details of a specific shipment by its unique identifier. Consolidates SOAP IShipmentService.GetShipment(shipmentId) and REST ShipmentController.GetShipment(id).",
+        "operationId": "getShipment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ShipmentId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shipment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Shipment"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Shipments"],
+        "summary": "Cancel a shipment",
+        "description": "Cancels an existing shipment. Maps from SOAP IShipmentService.CancelShipment(shipmentId) which returned a boolean. The REST API had no cancel endpoint; this is a new RESTful mapping of the SOAP operation using HTTP DELETE.",
+        "operationId": "cancelShipment",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ShipmentId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Shipment cancelled successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CancelShipmentResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/tracking/{trackingNumber}": {
+      "get": {
+        "tags": ["Tracking"],
+        "summary": "Get tracking information",
+        "description": "Retrieves real-time tracking information for a shipment by its tracking number, including current status, location, and full event history. Consolidates SOAP ITrackingService.GetTrackingInfo(TrackingRequest) and REST TrackingController.GetTracking(trackingNumber).",
+        "operationId": "getTrackingInfo",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TrackingNumber"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tracking information with event history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackingInfo"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rates": {
+      "post": {
+        "tags": ["Rates"],
+        "summary": "Get shipping rate quotes",
+        "description": "Returns rate quotes for all available service levels (Ground, Express, Overnight) based on the provided origin, destination, and package weight. Consolidates SOAP IRateService.GetRates(RateRequest) and REST QuoteController.GetQuotes(RateRequestDto).",
+        "operationId": "getRates",
+        "requestBody": {
+          "description": "Rate quote request with origin/destination zip codes and package weight.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Array of rate quotes for available service levels",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RateQuote"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    },
+    "/api/rates/{serviceLevel}": {
+      "post": {
+        "tags": ["Rates"],
+        "summary": "Get rate quote for a specific service level",
+        "description": "Returns a single rate quote for the specified service level. Maps from SOAP IRateService.GetRateForService(RateRequest, serviceLevel). The legacy REST API had no equivalent; this is a new RESTful mapping of the SOAP operation.",
+        "operationId": "getRateForService",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ServiceLevel"
+          }
+        ],
+        "requestBody": {
+          "description": "Rate quote request with origin/destination zip codes and package weight.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rate quote for the specified service level",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateQuote"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "ShipmentId": {
+        "name": "shipmentId",
+        "in": "path",
+        "required": true,
+        "description": "Unique identifier of the shipment (e.g., ship_a1b2c3d4)",
+        "schema": {
+          "type": "string",
+          "example": "ship_a1b2c3d4"
+        }
+      },
+      "TrackingNumber": {
+        "name": "trackingNumber",
+        "in": "path",
+        "required": true,
+        "description": "Tracking number assigned to the shipment (prefixed with CL)",
+        "schema": {
+          "type": "string",
+          "example": "CL123456789"
+        }
+      },
+      "ServiceLevel": {
+        "name": "serviceLevel",
+        "in": "path",
+        "required": true,
+        "description": "Shipping service level",
+        "schema": {
+          "type": "string",
+          "enum": ["Ground", "Express", "Overnight"],
+          "example": "Express"
+        }
+      }
+    },
+    "schemas": {
+      "Address": {
+        "type": "object",
+        "description": "Structured address object. Unifies flat address fields from both SOAP DataContracts (OriginAddress/OriginCity/OriginZipCode) and REST DTOs (FromAddress/FromCity/FromZip).",
+        "required": ["zipCode"],
+        "properties": {
+          "street": {
+            "type": "string",
+            "description": "Street address",
+            "example": "123 Main St"
+          },
+          "city": {
+            "type": "string",
+            "description": "City name",
+            "example": "New York"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "ZIP or postal code",
+            "example": "10001"
+          }
+        }
+      },
+      "PackageDetails": {
+        "type": "object",
+        "description": "Package dimensions and weight. Maps from SOAP DataContract PackageDetails and REST CreateShipmentDto dimensional fields.",
+        "required": ["weight"],
+        "properties": {
+          "weight": {
+            "type": "number",
+            "format": "double",
+            "description": "Package weight in pounds",
+            "example": 5.5,
+            "minimum": 0.1
+          },
+          "length": {
+            "type": "number",
+            "format": "double",
+            "description": "Package length in inches",
+            "example": 12.0,
+            "minimum": 0
+          },
+          "width": {
+            "type": "number",
+            "format": "double",
+            "description": "Package width in inches",
+            "example": 8.0,
+            "minimum": 0
+          },
+          "height": {
+            "type": "number",
+            "format": "double",
+            "description": "Package height in inches",
+            "example": 6.0,
+            "minimum": 0
+          },
+          "packageType": {
+            "type": "string",
+            "description": "Type of packaging",
+            "example": "Box",
+            "enum": ["Box", "Envelope", "Tube", "Pallet"]
+          }
+        }
+      },
+      "CreateShipmentRequest": {
+        "type": "object",
+        "description": "Request body for creating a new shipment. Unifies SOAP ShipmentRequest DataContract and REST CreateShipmentDto.",
+        "required": ["origin", "destination", "package", "serviceLevel"],
+        "properties": {
+          "origin": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "package": {
+            "$ref": "#/components/schemas/PackageDetails"
+          },
+          "serviceLevel": {
+            "type": "string",
+            "description": "Desired shipping service level",
+            "enum": ["Ground", "Express", "Overnight"],
+            "example": "Ground"
+          }
+        }
+      },
+      "Shipment": {
+        "type": "object",
+        "description": "Full shipment resource. Unifies SOAP ShipmentResponse DataContract and REST ShipmentDto.",
+        "properties": {
+          "shipmentId": {
+            "type": "string",
+            "description": "Unique shipment identifier",
+            "example": "ship_a1b2c3d4"
+          },
+          "trackingNumber": {
+            "type": "string",
+            "description": "Tracking number for the shipment (prefixed with CL)",
+            "example": "CL123456789"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "package": {
+            "$ref": "#/components/schemas/PackageDetails"
+          },
+          "serviceLevel": {
+            "type": "string",
+            "description": "Shipping service level",
+            "enum": ["Ground", "Express", "Overnight"],
+            "example": "Ground"
+          },
+          "status": {
+            "type": "string",
+            "description": "Current shipment status",
+            "enum": ["Created", "In Transit", "Out for Delivery", "Delivered", "Cancelled"],
+            "example": "Created"
+          },
+          "totalCost": {
+            "type": "number",
+            "format": "double",
+            "description": "Total shipping cost in USD",
+            "example": 25.99
+          },
+          "estimatedDeliveryDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Estimated delivery date (ISO 8601)",
+            "example": "2026-04-19"
+          }
+        }
+      },
+      "CancelShipmentResponse": {
+        "type": "object",
+        "description": "Response confirming shipment cancellation. Maps from SOAP CancelShipment boolean return to a structured response.",
+        "properties": {
+          "shipmentId": {
+            "type": "string",
+            "description": "ID of the cancelled shipment",
+            "example": "ship_a1b2c3d4"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "description": "Whether the cancellation was successful",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable cancellation message",
+            "example": "Shipment ship_a1b2c3d4 has been cancelled."
+          }
+        }
+      },
+      "TrackingEvent": {
+        "type": "object",
+        "description": "A single tracking event in the shipment history. Unifies SOAP TrackingEvent DataContract and REST TrackingEventDto.",
+        "properties": {
+          "eventType": {
+            "type": "string",
+            "description": "Type of tracking event",
+            "example": "Picked Up"
+          },
+          "location": {
+            "type": "string",
+            "description": "Location where the event occurred",
+            "example": "New York, NY"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the event",
+            "example": "2026-04-15T14:30:00Z"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable event description",
+            "example": "Package picked up from sender"
+          }
+        }
+      },
+      "TrackingInfo": {
+        "type": "object",
+        "description": "Tracking information for a shipment. Unifies SOAP TrackingResponse DataContract and REST TrackingDto.",
+        "properties": {
+          "trackingNumber": {
+            "type": "string",
+            "description": "Tracking number of the shipment",
+            "example": "CL123456789"
+          },
+          "currentStatus": {
+            "type": "string",
+            "description": "Current shipment status",
+            "example": "In Transit"
+          },
+          "currentLocation": {
+            "type": "string",
+            "description": "Current location of the shipment",
+            "example": "Distribution Center - Chicago, IL"
+          },
+          "estimatedDelivery": {
+            "type": "string",
+            "format": "date",
+            "description": "Estimated delivery date (ISO 8601)",
+            "example": "2026-04-18"
+          },
+          "events": {
+            "type": "array",
+            "description": "Chronological list of tracking events",
+            "items": {
+              "$ref": "#/components/schemas/TrackingEvent"
+            }
+          }
+        }
+      },
+      "RateRequest": {
+        "type": "object",
+        "description": "Request body for getting rate quotes. Unifies SOAP RateRequest DataContract and REST RateRequestDto.",
+        "required": ["originZipCode", "destinationZipCode", "packageWeight"],
+        "properties": {
+          "originZipCode": {
+            "type": "string",
+            "description": "Origin ZIP code",
+            "example": "10001"
+          },
+          "destinationZipCode": {
+            "type": "string",
+            "description": "Destination ZIP code",
+            "example": "90001"
+          },
+          "packageWeight": {
+            "type": "number",
+            "format": "double",
+            "description": "Package weight in pounds",
+            "example": 5.5,
+            "minimum": 0.1
+          }
+        }
+      },
+      "RateQuote": {
+        "type": "object",
+        "description": "A shipping rate quote for a specific service level. Unifies SOAP RateQuote DataContract and REST RateQuoteDto. Adds the detailed cost breakdown from SOAP that was missing in REST.",
+        "properties": {
+          "serviceLevel": {
+            "type": "string",
+            "description": "Shipping service level",
+            "enum": ["Ground", "Express", "Overnight"],
+            "example": "Ground"
+          },
+          "baseRate": {
+            "type": "number",
+            "format": "double",
+            "description": "Base shipping rate before surcharges (USD)",
+            "example": 2.75
+          },
+          "fuelSurcharge": {
+            "type": "number",
+            "format": "double",
+            "description": "Fuel surcharge amount (USD)",
+            "example": 5.00
+          },
+          "totalCost": {
+            "type": "number",
+            "format": "double",
+            "description": "Total shipping cost including all surcharges (USD)",
+            "example": 7.75
+          },
+          "estimatedDays": {
+            "type": "integer",
+            "description": "Estimated transit time in business days",
+            "example": 5
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "description": "Standard error response body",
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Machine-readable error code",
+            "example": "INVALID_REQUEST"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable error message",
+            "example": "The request body is invalid."
+          },
+          "details": {
+            "type": "array",
+            "description": "Optional list of detailed validation errors",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "The field that caused the error",
+                  "example": "packageWeight"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Description of the field-level error",
+                  "example": "Must be greater than 0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "The request was invalid or malformed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INVALID_REQUEST",
+              "message": "The request body is invalid.",
+              "details": [
+                {
+                  "field": "packageWeight",
+                  "message": "Must be greater than 0"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The requested resource was not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "NOT_FOUND",
+              "message": "The requested resource was not found."
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "An unexpected server error occurred",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "code": "INTERNAL_ERROR",
+              "message": "An unexpected error occurred. Please try again later."
+            }
+          }
+        }
+      }
+    }
+  }
+}
