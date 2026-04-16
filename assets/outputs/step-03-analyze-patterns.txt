@@ -1,0 +1,97 @@
+ÔùÅ List directory CargoLink.SoapServices
+  Ôöö 7 files found
+
+ÔùÅ List directory CargoLink.Core
+  Ôöö 4 files found
+
+ÔùÅ List directory CargoLink.RestApi
+  Ôöö 5 files found
+
+ÔùÅ List directory CargoLink.SoapServices\DataContracts
+  Ôöö 3 files found
+
+ÔùÅ List directory CargoLink.RestApi\Models
+  Ôöö 2 files found
+
+ÔùÅ List directory CargoLink.Core\Services
+  Ôöö 1 file found
+
+ÔùÅ List directory CargoLink.RestApi\Controllers
+  Ôöö 3 files found
+
+ÔùÅ Read ShipmentService.svc.cs
+  Ôöé CargoLink.SoapServices\ShipmentService.svc.cs
+  Ôöö 57 lines read
+
+ÔùÅ Read ShipmentRequest.cs
+  Ôöé CargoLink.SoapServices\DataContracts\ShipmentRequest.cs
+  Ôöö 70 lines read
+
+ÔùÅ Read TrackingResponse.cs
+  Ôöé CargoLink.SoapServices\DataContracts\TrackingResponse.cs
+  Ôöö 46 lines read
+
+ÔùÅ Read TrackingService.svc.cs
+  Ôöé CargoLink.SoapServices\TrackingService.svc.cs
+  Ôöö 43 lines read
+
+ÔùÅ Read RateService.svc.cs
+  Ôöé CargoLink.SoapServices\RateService.svc.cs
+  Ôöö 60 lines read
+
+ÔùÅ Read QuoteController.cs
+  Ôöé CargoLink.RestApi\Controllers\QuoteController.cs
+  Ôöö 55 lines read
+
+ÔùÅ Read RateQuote.cs
+  Ôöé CargoLink.SoapServices\DataContracts\RateQuote.cs
+  Ôöö 39 lines read
+
+ÔùÅ Read TrackingController.cs
+  Ôöé CargoLink.RestApi\Controllers\TrackingController.cs
+  Ôöö 41 lines read
+
+ÔùÅ Read ShipmentController.cs
+  Ôöé CargoLink.RestApi\Controllers\ShipmentController.cs
+  Ôöö 76 lines read
+
+ÔùÅ Read ShipmentDto.cs
+  Ôöé CargoLink.RestApi\Models\ShipmentDto.cs
+  Ôöö 31 lines read
+
+ÔùÅ Read ShippingService.cs
+  Ôöé CargoLink.Core\Services\ShippingService.cs
+  Ôöö 54 lines read
+
+ÔùÅ Read TrackingDto.cs
+  Ôöé CargoLink.RestApi\Models\TrackingDto.cs
+  Ôöö 19 lines read
+
+Now I have all the source code. Let me also check the existing assets directory and OpenAPI spec for additional context.
+
+ÔùÅ Read openapi-legacy-rest.json
+  Ôöö 217 lines read
+
+ÔùÅ List directory assets
+  Ôöö 3 files found
+
+ÔùÅ List directory assets\outputs
+  Ôöö 6 files found
+
+ÔùÅ Create step-03-analyze-patterns.md +240
+  Ôöö assets\outputs\step-03-analyze-patterns.md
+
+Created `assets/outputs/step-03-analyze-patterns.md` with a comprehensive analysis covering all five areas:
+
+1. **SOAP-to-REST mapping** ÔÇö Found 2 missing REST endpoints (`CancelShipment`, `GetRateForService`) and 1 REST-only endpoint (`GetShipments`)
+2. **Data contract differences** ÔÇö SOAP uses nested `PackageDetails`; REST flattens everything. Several fields missing from REST (`PackageType`, `EstimatedDeliveryDate`, cost breakdown)
+3. **Error handling gaps** ÔÇö Zero `[FaultContract]` attributes in SOAP; REST has only null-body checks with no 404s, no validation, no global exception filter
+4. **Business logic duplication** ÔÇö Cost calc exists in 3 places producing **3 different prices** ($6, $10, $11) for the same 10 lb Ground shipment. `ShippingService.cs` in Core is never referenced
+5. **Naming inconsistencies** ÔÇö 12+ naming divergences (`TrackingId` vs `TrackingNumber`, `Cost` vs `Price` vs `TotalCost`, `Origin`/`Destination` vs `From`/`To`, etc.)
+
+Includes a 12-item prioritized recommendations table for modernization.
+
+
+Changes   +240 -0
+Requests  3 Premium (2m 6s)
+Tokens    Ôåæ 251.1k ÔÇó Ôåô 6.9k ÔÇó 173.6k (cached)
