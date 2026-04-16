@@ -1,0 +1,66 @@
+ÔùÅ List directory .
+  Ôöö 11 files found
+
+ÔùÅ Search (glob)
+  Ôöé "assets/outputs/**/*"
+  Ôöö 8 files found
+
+ÔùÅ Read openapi-unified-v2.json
+  Ôöé assets\outputs\openapi-unified-v2.json
+  Ôöö 1 line read
+
+ÔùÅ Read step-03-analyze-patterns.md
+  Ôöé assets\outputs\step-03-analyze-patterns.md
+  Ôöö 239 lines read
+
+ÔùÅ Read step-04-design-modern-api.txt
+  Ôöé assets\outputs\step-04-design-modern-api.txt
+  Ôöö 10 lines read
+
+ÔùÅ Read openapi-unified-v2.json
+  Ôöé assets\outputs\openapi-unified-v2.json
+  Ôöö L1:80 (80 lines read)
+
+ÔùÅ Read openapi-unified-v2.json
+  Ôöé assets\outputs\openapi-unified-v2.json
+  Ôöö L80:250 (171 lines read)
+
+ÔùÅ Read openapi-unified-v2.json
+  Ôöé assets\outputs\openapi-unified-v2.json
+  Ôöö L250:500 (251 lines read)
+
+ÔùÅ Read openapi-unified-v2.json
+  Ôöé assets\outputs\openapi-unified-v2.json
+  Ôöö L500:700 (186 lines read)
+
+Now I have full context from the OpenAPI spec and the pattern analysis. Let me create the design document.
+
+ÔùÅ Create step-04-design-modern-api.md +1132
+  Ôöö assets\outputs\step-04-design-modern-api.md
+
+Now let me verify the file was created properly and commit it.
+
+ÔùÅ Check git status (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-spec-driven-api-modernization && git
+  Ôöé --no-pager diff --stat
+  Ôöö 1 line...
+
+ÔùÅ Check untracked files (shell)
+  Ôöé cd C:\code\gbb\labs\appmodlab-spec-driven-api-modernization && git status
+  Ôöé --short
+  Ôöö 3 lines...
+
+The design document has been created at `assets/outputs/step-04-design-modern-api.md`. Here's what it covers:
+
+1. **Project structure** ÔÇö Single `CargoLink.Api` project with `Controllers/`, `Models/Requests|Responses/`, `Services/Interfaces/`, `Middleware/`, `Configuration/`
+2. **RESTful routes** ÔÇö 7 endpoints under `/api/v1/` covering all legacy SOAP + REST operations with zero functionality loss
+3. **DTO design** ÔÇö Unified DTOs with `[Required]`, `[Range]`, `[RegularExpression]` validation; resolves all 12 naming conflicts and restores missing fields (`PackageType`, `EstimatedDeliveryDate`, cost breakdown)
+4. **Service interfaces** ÔÇö `IShipmentService`, `ITrackingService`, `IRateService` with async methods and `CancellationToken` support; centralizes cost calculation to fix the 3-way pricing discrepancy
+5. **Middleware** ÔÇö `GlobalExceptionMiddleware`, `ApiKeyAuthMiddleware`, and custom validation response factory
+6. **DI configuration** ÔÇö Full `Program.cs` with service registration, JSON options, Swagger, and health checks
+7. **API versioning** ÔÇö URL path versioning (`/api/v1/`) with future v2 migration strategy
+
+
+Changes   +1132 -0
+Requests  3 Premium (3m 34s)
+Tokens    Ôåæ 385.9k ÔÇó Ôåô 13.6k ÔÇó 337.8k (cached)
