@@ -1,6 +1,5 @@
 using System.Net;
-using System.Text.Json;
-using CargoLink.ModernApi.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CargoLink.ModernApi.Middleware;
 
@@ -23,38 +22,33 @@ public class ErrorHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unhandled exception");
+            _logger.LogError(ex, "Unhandled exception occurred");
             await HandleExceptionAsync(context, ex);
         }
     }
 
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        var response = context.Response;
-        response.ContentType = "application/json";
-
-        var errorResponse = new ErrorResponse();
-
-        switch (exception)
+        var (statusCode, title) = exception switch
         {
-            case ArgumentException:
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                errorResponse.Code = "BAD_REQUEST";
-                errorResponse.Message = exception.Message;
-                break;
-            case KeyNotFoundException:
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-                errorResponse.Code = "NOT_FOUND";
-                errorResponse.Message = exception.Message;
-                break;
-            default:
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                errorResponse.Code = "INTERNAL_ERROR";
-                errorResponse.Message = "An unexpected error occurred.";
-                break;
-        }
+            ArgumentException => ((int)HttpStatusCode.BadRequest, "Bad Request"),
+            KeyNotFoundException => ((int)HttpStatusCode.NotFound, "Not Found"),
+            InvalidOperationException => ((int)HttpStatusCode.Conflict, "Conflict"),
+            _ => ((int)HttpStatusCode.InternalServerError, "Internal Server Error")
+        };
 
-        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-        await response.WriteAsJsonAsync(errorResponse, options);
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Detail = statusCode == (int)HttpStatusCode.InternalServerError
+                ? "An unexpected error occurred."
+                : exception.Message,
+            Instance = context.Request.Path
+        };
+
+        context.Response.StatusCode = statusCode;
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(problemDetails);
     }
 }

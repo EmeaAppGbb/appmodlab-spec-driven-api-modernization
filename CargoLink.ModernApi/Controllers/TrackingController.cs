@@ -6,6 +6,7 @@ namespace CargoLink.ModernApi.Controllers;
 
 [ApiController]
 [Route("api/v1/tracking")]
+[Produces("application/json")]
 public class TrackingController : ControllerBase
 {
     private readonly ITrackingService _trackingService;

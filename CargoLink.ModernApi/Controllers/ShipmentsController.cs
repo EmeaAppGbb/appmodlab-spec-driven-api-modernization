@@ -6,6 +6,7 @@ namespace CargoLink.ModernApi.Controllers;
 
 [ApiController]
 [Route("api/v1/shipments")]
+[Produces("application/json")]
 public class ShipmentsController : ControllerBase
 {
     private readonly IShipmentService _shipmentService;
@@ -37,7 +38,7 @@ public class ShipmentsController : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(ShipmentResponse), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateShipmentRequest request)
     {
         var shipment = await _shipmentService.CreateAsync(request);
@@ -51,7 +52,7 @@ public class ShipmentsController : ControllerBase
     {
         var cancelled = await _shipmentService.CancelAsync(id);
         if (!cancelled)
-            return NotFound(new ErrorResponse { Message = "Shipment not found", Code = "SHIPMENT_NOT_FOUND" });
+            return NotFound(new ErrorResponse { Message = "Shipment not found or already cancelled", Code = "SHIPMENT_NOT_FOUND" });
 
         return NoContent();
     }

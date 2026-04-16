@@ -17,9 +17,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // Register application services
-builder.Services.AddScoped<IShipmentService, ShipmentService>();
-builder.Services.AddScoped<ITrackingService, TrackingService>();
-builder.Services.AddScoped<IRateService, RateService>();
+builder.Services.AddSingleton<IRateService, RateService>();
+builder.Services.AddSingleton<ShipmentService>();
+builder.Services.AddSingleton<IShipmentService>(sp => sp.GetRequiredService<ShipmentService>());
+builder.Services.AddSingleton<ITrackingService, TrackingService>();
 
 var app = builder.Build();
 
