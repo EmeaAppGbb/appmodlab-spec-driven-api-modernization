@@ -11,7 +11,7 @@ modernizationTools: ["Spec2Cloud"]
 agenticTools: []
 tags: ["api-modernization", "soap-to-rest", "openapi", "wcf", "api-management"]
 extensions: ["github.copilot"]
-thumbnail: ""
+thumbnail: "https://raw.githubusercontent.com/EmeaAppGbb/appmodlab-spec-driven-api-modernization/main/assets/thumbnail-gpt-image.png"
 video: ""
 version: "1.0.0"
 screenshots:
